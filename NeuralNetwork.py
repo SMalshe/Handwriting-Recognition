@@ -29,3 +29,22 @@ model = tf.keras.models.load_model('handwritten.keras')
 
 #Evaluate Model
 loss, accuracy = model.evaluate(x_test, y_test)
+
+#Test on Custom Images
+image_number = 0
+while os.path.isfile(f"Digit{image_number}.png"):
+    try:
+        img = cv2.imread(f"Digit{image_number}.png")[:,:,0]
+        img = cv2.resize(img, (28, 28), interpolation=cv2.INTER_AREA)
+        img = np.invert(np.array([img]))
+        prediction = model.predict(img)
+        plt.imshow(img[0], cmap = plt.cm.binary)
+        plt.show()
+        print(f"The number is probably: {np.argmax(prediction)}")
+    except FileNotFoundError:
+        print("File wasn't found")
+    except IndexError:
+        print("Index out of range")
+    except:
+        print("Unexpected error:", sys.exc_info()[0])
+    finally: image_number += 1
